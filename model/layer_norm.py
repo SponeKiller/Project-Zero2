@@ -22,7 +22,7 @@ class LayerNorm(nn.Module):
         
         """
         
-        super(LayerNorm, self).__init__()
+        super().__init__()
         
         self.a = nn.Parameter(torch.ones(features))
         self.b = nn.Parameter(torch.zeros(features))
