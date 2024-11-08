@@ -1,7 +1,7 @@
 from torch import nn
 import torch
 
-class PosEmbedding(nn.Module):
+class PositionalEmbedding(nn.Module):
     
     """
     Positional Embedding
