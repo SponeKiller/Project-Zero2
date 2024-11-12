@@ -45,7 +45,6 @@ class MultiHeadAttention(nn.Module):
     def attention(q: torch.Tensor,
                   k: torch.Tensor,
                   v: torch.Tensor,
-                  mask: torch.Tensor,
                   dropout: nn.Dropout) -> torch.Tensor:
         """
         Calculate attention
@@ -66,10 +65,6 @@ class MultiHeadAttention(nn.Module):
         # Calculate attention scores
         attention_scores = torch.matmul(q, k.transpose(-2, -1)) /  torch.sqrt(d_k)
         
-        if mask is not None:
-            # Mask tokens that should not model give its attention
-            attention_scores.masked_fill_(mask == 0, -1e9)
-        
         
         attention_scores = attention_scores.softmax(dim=-1)
         
@@ -79,9 +74,7 @@ class MultiHeadAttention(nn.Module):
         
         return torch.matmul(attention_scores, v)
     
-    def forward(self, 
-                x: torch.Tensor, 
-                mask: Optional[torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         
         """
         Forward pass of MultiHeadAttention
@@ -110,7 +103,7 @@ class MultiHeadAttention(nn.Module):
         key = key.view(key.size(0), key.size(1), self.num_heads, self.d_k).transpose(1, 2)
         value = value.view(value.size(0), value.size(1), self.num_heads, self.d_k).transpose(1, 2)
         
-        attention = MultiHeadAttention.attention(query, key, value, mask, self.dropout)
+        attention = MultiHeadAttention.attention(query, key, value, self.dropout)
         
         # (batch_size, num_heads, seq_len, d_k) -> (batch_size, seq_len, d_model)
         attention = attention.transpose(1, 2).contiguous().view(x.size(0), x.size(1), self.d_k * self.num_heads)
