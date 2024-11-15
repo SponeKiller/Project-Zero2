@@ -1,0 +1,120 @@
+from torch import nn
+import torch
+from encoder import Encoder
+from classification import Classification
+from pos_embedding import PositionalEmbedding
+
+class VisionTransformer(nn.Module):
+    
+    """
+    Vision Transformer
+    """
+    
+    def __init__(self,
+                 patch_size: int, 
+                 num_channels: int,
+                 class_type: str,
+                 labels: list,
+                 num_classes: int,
+                 d_model: int,
+                 num_heads: int,
+                 hidden_dim: int,
+                 mlp_layers: int = 2,
+                 enc_layers: int = 6,  
+                 dropout: float = 0.3):
+        
+        """
+        
+         Inicialize the Vision Transformer model
+         
+         Args:                
+            patch_size: int
+                The size of the patch
+                
+            num_channels: int
+                The number of channels of the image
+                
+            class_type: str
+                The type of classification
+                
+            labels: list
+                The labels of the classification
+                
+            num_classes: int
+                The number of classes
+                
+            d_model: int
+                The dimension of the model
+                
+            num_heads: int
+                The number of heads
+                
+            hidden_dim: int
+                The hidden dimension
+                
+            mlp_layers: int
+                The number of layers of the mlp
+                
+            enc_layers: int
+                The number of layers of the encoder
+                
+            dropout: float
+                The dropout rate
+        """
+        
+        #
+        # HERE TO DO DATA VALIDATION
+        #
+        super().__init__()
+    
+        
+        
+        self.patch_embedding = nn.Conv2d(in_channels=num_channels,
+                                         out_channels=d_model,            kernel_size=patch_size)
+        
+        self.pos_embedding = PositionalEmbedding(d_model)
+        
+        self.encoder = Encoder(d_model,
+                               num_heads,
+                               hidden_dim,
+                               mlp_layers,
+                               enc_layers,
+                               dropout)
+        
+        self.classification = Classification(d_model,
+                                             class_type,
+                                             labels,
+                                             num_classes)
+        
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        
+        """
+        
+        Forward pass of the model
+        
+        Args:
+            x: torch.Tensor
+                The input tensor
+                
+        Returns:
+            x: torch.Tensor
+                The output tensor
+        """
+        
+        ##
+        # HERE TO DO DATA VALIDATION
+        ##
+        
+        #b, w, h, c  -> b, p, c
+        b, w, h, c = x.shape
+        x = x.view(b, w * h, c)    
+    
+        x = self.patch_embedding(x)
+        
+        x = self.pos_embedding(x)
+        
+        x = self.encoder(x)
+        
+        x = self.classification(x)
+        
+        return x
