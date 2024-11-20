@@ -105,11 +105,14 @@ class VisionTransformer(nn.Module):
         # HERE TO DO DATA VALIDATION
         ##
         
-        #b, w, h, c  -> b, p, c
-        b, w, h, c = x.shape
-        x = x.view(b, w * h, c)    
+        #b, c, h, w  -> b, c, p
+        b, c, h, w = x.shape
+        x = x.view(b, c, h*w)    
     
         x = self.patch_embedding(x)
+        
+        #b, c, p -> b, p, c
+        x = x.view(b, x.shape[-1], x.shape[1])
         
         x = self.pos_embedding(x)
         
