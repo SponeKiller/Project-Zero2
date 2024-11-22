@@ -110,7 +110,7 @@ class VisionTransformer(nn.Module):
         x = self.patch_embedding(x)
         
         #b, c, p -> b, p, c
-        x = x.view(b, x.shape[-1], x.shape[1])
+        x = x.view(x.shape[0], x.shape[-1], x.shape[1])
         
         x = self.pos_embedding(x)
         
