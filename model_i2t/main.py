@@ -72,6 +72,8 @@ class VisionTransformer(nn.Module):
         self.patch_embedding = nn.Conv2d(in_channels=num_channels,
                                          out_channels=d_model,            kernel_size=patch_size)
         
+        self.pooling = nn.MaxPool2d(kernel_size=2, stride=1)
+        
         self.pos_embedding = PositionalEmbedding(d_model)
         
         self.encoder = Encoder(d_model,
@@ -109,8 +111,10 @@ class VisionTransformer(nn.Module):
     
         x = self.patch_embedding(x)
         
-        #b, c, p -> b, p, c
-        x = x.view(x.shape[0], x.shape[-1], x.shape[1])
+        x = self.pooling(x)
+        
+        #b, c, h, w -> b, p, c
+        x = x.view(x.shape[0], -1, x.shape[1])
         
         x = self.pos_embedding(x)
         
