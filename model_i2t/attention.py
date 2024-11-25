@@ -99,9 +99,9 @@ class MultiHeadAttention(nn.Module):
         value = self.v(x)
         
         # (batch_size, seq_len, d_model) -> (batch_size, num_heads, seq_len, d_k)
-        query = query.view(query.size(0), query.size(1), self.num_heads, self.d_k).transpose(1, 2)
-        key = key.view(key.size(0), key.size(1), self.num_heads, self.d_k).transpose(1, 2)
-        value = value.view(value.size(0), value.size(1), self.num_heads, self.d_k).transpose(1, 2)
+        query = query.view(query.size(0), query.size(1), int(self.num_heads), int(self.d_k)).transpose(1, 2)
+        key = key.view(key.size(0), key.size(1), int(self.num_heads), int(self.d_k)).transpose(1, 2)
+        value = value.view(value.size(0), value.size(1), int(self.num_heads), int(self.d_k)).transpose(1, 2)
         
         attention = MultiHeadAttention.attention(query, key, value, self.dropout)
         
