@@ -63,7 +63,7 @@ class MultiHeadAttention(nn.Module):
         d_k = q.size(-1)
         
         # Calculate attention scores
-        attention_scores = torch.matmul(q, k.transpose(-2, -1)) /  torch.sqrt(d_k)
+        attention_scores = torch.matmul(q, k.transpose(-2, -1)) /  torch.sqrt(torch.tensor(d_k, dtype=torch.float))
         
         
         attention_scores = attention_scores.softmax(dim=-1)
