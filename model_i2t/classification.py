@@ -32,9 +32,9 @@ class Classification(nn.Module):
         self.d_model = d_model
         self.labels = labels
         
-        if class_type == "token":
+       
             
-            self.classifier = nn.Linear(d_model, num_classes)
+        self.classifier = nn.Linear(d_model, num_classes)
         
 
     def forward(self, x: torch.Tensor) -> list[str]:
