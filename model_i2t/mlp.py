@@ -30,7 +30,7 @@ class MLP(nn.Module):
 
     
         
-    def fowards(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Foward pass MLP
         
