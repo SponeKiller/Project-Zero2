@@ -23,9 +23,9 @@ class MultiHeadAttention(nn.Module):
         """
         
         assert (
-        d_model % num_heads == 0,
-        "d_model should be multiple of num_heads"
-        )
+            d_model % num_heads == 0
+        ),"d_model should be multiple of num_heads"
+        
         
         super().__init__()
         
