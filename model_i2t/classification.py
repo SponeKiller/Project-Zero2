@@ -1,6 +1,5 @@
 from torch import nn
 import torch
-from typing import Optional
 
 
 class Classification(nn.Module):
@@ -12,8 +11,8 @@ class Classification(nn.Module):
     def __init__(self, 
                  class_type: str,
                  labels: list[str], 
-                 d_model: Optional[int] = None, 
-                 num_classes: Optional[int] = None) -> None:
+                 d_model: int, 
+                 num_classes: int) -> None:
         
         """
         Inicialize Classification
@@ -21,8 +20,8 @@ class Classification(nn.Module):
         Args:
         class_type: str - "token" or "gap"
         labels: list[str] - list of labels
-        d_model: Optional[int] - dimension of the model
-        num_classes: Optiona[int] - number of classes
+        d_model: int - dimension of the model
+        num_classes: int - number of classes
         
         """
         
@@ -32,9 +31,9 @@ class Classification(nn.Module):
         self.d_model = d_model
         self.labels = labels
         
-        if class_type == "token":
+       
             
-            self.classifier = nn.Linear(d_model, num_classes)
+        self.classifier = nn.Linear(d_model, num_classes)
         
 
     def forward(self, x: torch.Tensor) -> list[str]:

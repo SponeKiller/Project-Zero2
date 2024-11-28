@@ -23,15 +23,15 @@ class MultiHeadAttention(nn.Module):
         """
         
         assert (
-        d_model % num_heads == 0,
-        "d_model should be multiple of num_heads"
-        )
+            d_model % num_heads == 0
+        ),"d_model should be multiple of num_heads"
+        
         
         super().__init__()
         
         self.num_heads = num_heads
         self.d_model = d_model
-        self.d_k = d_model / num_heads
+        self.d_k = d_model // num_heads
         
         self.q = nn.Linear(d_model, d_model)
         self.k = nn.Linear(d_model, d_model)
@@ -63,7 +63,7 @@ class MultiHeadAttention(nn.Module):
         d_k = q.size(-1)
         
         # Calculate attention scores
-        attention_scores = torch.matmul(q, k.transpose(-2, -1)) /  torch.sqrt(d_k)
+        attention_scores = torch.matmul(q, k.transpose(-2, -1)) /  torch.sqrt(torch.tensor(d_k, dtype=torch.float))
         
         
         attention_scores = attention_scores.softmax(dim=-1)
