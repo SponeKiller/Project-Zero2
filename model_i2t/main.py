@@ -83,10 +83,11 @@ class VisionTransformer(nn.Module):
                                enc_layers,
                                dropout)
         
-        self.classification = Classification(d_model,
-                                             class_type,
+        self.classification = Classification(class_type,
                                              labels,
+                                             d_model,
                                              num_classes)
+                                             
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
