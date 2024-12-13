@@ -3,6 +3,8 @@ import json
 from typing import List, Literal, Optional, Tuple, TypedDict
 from tqdm import tqdm
 from pathlib import Path
+import inspect
+import shutil
 
 import torch
 import torch.nn as nn
@@ -37,6 +39,16 @@ class Train():
         self.device: torch.device = (
             torch.device("cuda" if torch.cuda.is_available() else "cpu")
         )
+        self.optimizer: torch.optim.AdamW = torch.optim.AdamW(
+            self.model.parameters(),
+            lr=self.config.lr,
+            eps=self.config.epsilon,
+            weight_decay=self.config.weight_decay
+        )
+        
+        self.loss_fn: nn.CrossEntropyLoss = nn.CrossEntropyLoss(
+            label_smoothing=self.config.label_smoothing
+        ).to(self.device)
         
 
 
@@ -44,67 +56,46 @@ class Train():
         
         train_dataloader, val_dataloader = self._set_dataset()
 
-        optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.config.lr, eps=1e-9, weight_decay=self.config.weight_decay)
-
         initial_epoch = 0
         global_step = 0
 
-        
-        if self.config['preload'] == "latest":
-            model_filename = self.latest_weights_file_path()
-        elif self.config['preload']:
-            model_filename = self.get_weights_file_path()
-        else:
-            model_filename = None
-            
-        if model_filename:
-            
-            print(f'Preloading model {model_filename}')
-            state = torch.load(model_filename)
-            self.model.load_state_dict(state['model_state_dict'])
-            initial_epoch = state['epoch'] + 1
-            optimizer.load_state_dict(state['optimizer_state_dict'])
-            global_step = state['global_step']
-        else:
-            print('No model to preload, starting from scratch')
-        
-        loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1).to(self.device)
 
         for epoch in range(initial_epoch, self.config.num_epochs):
             torch.cuda.empty_cache()
             
             self.model.train()
-            
-            batch_iterator = tqdm(train_dataloader, desc=f"Processing Epoch {epoch:02d}")
+            self._load_model_state(epoch)
+            batch_iterator: torch.Tensor = tqdm(train_dataloader, desc=f"Processing Epoch {epoch:02d}")
             
             for batch in batch_iterator:
 
              
 
-                output = self.model.forward(batch['input_ids'].to(self.device))
+                output = self.model.forward(batch['decoder_input'].to(self.device))
 
                 # Compare the output with the label
                 # (B, seq_len)
                 label: torch.Tensor = batch['label'].to(self.device) 
 
-                # Compute the loss using a simple cross entropy
-                loss = loss_fn(output.view(-1, self.config.num_classes), label.view(-1))
-                batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"})
+                # Compute the loss using a simple cross entrophy
+                loss: torch.Tensor = self.loss_fn(
+                    output.view(-1, self.config.num_classes),
+                    label.view(-1)
+                )
 
-            
 
                 # Backpropagate the loss
                 loss.backward()
 
                 # Update the weights
-                optimizer.step()
-                optimizer.zero_grad(set_to_none=True)
+                self.optimizer.step()
+                self.optimizer.zero_grad(set_to_none=True)
 
                 global_step += 1
 
             
             # Run validation at the end of every epoch
-            self.run_validation(
+            self._run_validation(
                 self.model, 
                 val_dataloader, 
                 tokenizer_src, 
@@ -129,15 +120,20 @@ class Train():
         """
         Finetune training
         """       
+        
+        print("Currently not implemented")
+        return
     
     def reinforce_training(self):
         """
         Reinforce learinig 
         """
+        print("Currently not implemented")
+        return
+
         
         
-        
-    def _set_dataset(self):
+    def _set_dataset(self) -> Tuple[DataLoader, DataLoader]:
 
         #loading data
         self.ds_raw = self._load_dataset(self.config.train_data)
@@ -145,8 +141,8 @@ class Train():
         # Splitting Val and train ds
         assert self.config.train_ds_size > 1, "Train_ds_size must be less or equal 1"
         
-        #Checking if user wants to augment dataset
-        self.augment_dataset()
+        if self.config.augment:
+            self.augment_dataset()
         
         train_ds_size: int = self.config.train_ds_size * len(self.ds_raw)
         val_ds_size: int = len(self.ds_raw) - train_ds_size
@@ -173,6 +169,7 @@ class Train():
         print("Dataset has been successfully loaded")
 
         return train_dataloader, val_dataloader
+    
 
     def _load_dataset(self):
 
@@ -186,74 +183,33 @@ class Train():
             List[str] - data from csv file.
 
         Raises:
-            AssertionError: if in provided path wont find any csv files.
-            AssertionError: if columns wont be in correct order
-            AssertionError: if columns is more than should be provided 
+            AssertionError: if in provided path wont find any jsonl files.
         """
         
-        files = sorted(Path(self.config.train_data).glob("*.jsonl"))
+        file_path = Path(self.config.train_data)
 
-        assert len(files) > 0, f"No jsonl files found in directory {self.config.train_data}"
-
+        assert file_path.is_file(), (
+            f"No jsonl files found in directory {self.config.train_data}"
+        )
         
-        if (len(files) > 1):
-            
-            term = Terminal()
-            
-            with term.cbreak():
-                # Starting index
-                selected = 0
-
-                print("Please select file for training model")
-                
-                # Event loop
-                while True:
-                    print(term.move_yx(0, 0) + term.clear)
-                    
-                    for index, option in enumerate(files):
-                        if index == selected:
-                            print(term.underline + option + term.no_underline)
-                        else:
-                            print(option)
-
-                    inp = term.inkey()
-                    
-                    if inp.is_sequence:
-                        if inp.name == "KEY_UP":
-                            selected -= 1
-                        elif inp.name == "KEY_DOWN":
-                            selected += 1
-                        elif inp.name == "KEY_ENTER":
-                            break
-
-
-                    # Stay within the options list
-                    selected %= len(files)
-
-            selected_file = files[selected]
-            
-        else:
-            selected_file = files[0]
         
         data = []
         
-        with open(selected_file, "r") as file:
-            for line in file:
+        caller_function = inspect.stack()[1].function
+        
+        with open(file_path, "r") as f:
+            for line in f:
                 #Checking if input data for fine tuning are in correct shape
-                if(self.selected_training == "Pretraing"):
+                if(caller_function == "pretrain_training"):
                     assert len(line) == 1, (f"Pretraing data should have only 1 column, but provided {len(line)}")
-                ## Tady jeste orpavit
-                if(self.selected_training == "Finetuning"):    
+                elif(caller_function == "finetune_training"):    
                     assert line["messages"][0]["role"] == "system" and line["messages"][1::2]["role"] == "user" and line["messages"][2::2]["role"] == "assistant", ("model only supports 'system', 'user' and 'assistant' roles,starting with 'system', then 'user' and alternating (u/a/u/a/u...)")
-                    
-                if(self.selected_training == "Reinforce_learning"):    
+                elif(caller_function == "reinforce_training"):    
                     assert len(line) == 1, (f"Reinforce_learning data should have only 1 column, but provided {len(line)}")
+                else:
+                    raise AssertionError("Other training types are not supported")
                 
                 data.append(json.loads(line))
-        
-        
-        
-        print(f"Selected file: {selected_file} is loading.") 
              
         return data
         
@@ -276,64 +232,118 @@ class Train():
         self.ds_raw = augment.augment_ds      
 
 
-    def run_validation(self, model, validation_ds, tokenizer_src, tokenizer_tgt, max_len, device, print_msg, global_step, writer, num_examples=2):
-        model.eval()
+    def _run_validation(self,
+                       validation_ds: torch.Tensor,
+                       num_examples: int = 10) -> None:
+        
+        self.model.eval()
+        
         count = 0
 
-        source_texts = []
+        source_image = []
         expected = []
         predicted = []
 
-        try:
-            # get the console window width
-            with os.popen('stty size', 'r') as console:
-                _, console_width = console.read().split()
-                console_width = int(console_width)
-        except:
-            # If we can't get the console width, use 80 as default
-            console_width = 80
 
         with torch.no_grad():
             for batch in validation_ds:
                 count += 1
-                encoder_input = batch["encoder_input"].to(device) # (b, seq_len)
-                encoder_mask = batch["encoder_mask"].to(device) # (b, 1, 1, seq_len)
+                # (b, seq_len)
+                decoder_input = batch["decoder_input"].to(self.device) 
 
-                # check that the batch size is 1
-                assert encoder_input.size(
-                    0) == 1, "Batch size must be 1 for validation"
+                output_img = self.model.forward(batch['decoder_input'].to(self.device))
 
-                model_out = greedy_decode(model, encoder_input, encoder_mask, tokenizer_src, tokenizer_tgt, max_len, device)
-
-                source_text = batch["src_text"][0]
-                target_text = batch["tgt_text"][0]
-                model_out_text = tokenizer_tgt.decode(model_out.detach().cpu().numpy())
-
-                source_texts.append(source_text)
-                expected.append(target_text)
-                predicted.append(model_out_text)
+                target_img = batch["label"]
                 
-                # Print the source, target and model output
-                print_msg('-'*console_width)
-                print_msg(f"{f'SOURCE: ':>12}{source_text}")
-                print_msg(f"{f'TARGET: ':>12}{target_text}")
-                print_msg(f"{f'PREDICTED: ':>12}{model_out_text}")
+                correct = torch.argmax(output_img, dim=1) == target_img
+                
+                print(f"{f'TARGET: ':>12}{target_img}")
+                print(f"{f'PREDICTED: ':>12}{output_img}")
 
                 if count == num_examples:
-                    print_msg('-'*console_width)
                     break
+        
+        print(f"ACCURACY: {count}/{num_examples}")
 
-    def get_weights_file_path(self, config, epoch: str):
-        model_folder = f"{config['datasource']}_{config['model_folder']}"
-        model_filename = f"{config['model_basename']}{epoch}.pt"
-        return str(Path('.') / model_folder / model_filename)
 
-    # Find the latest weights file in the weights folder
-    def latest_weights_file_path(self, config):
-        model_folder = f"{config['datasource']}_{config['model_folder']}"
-        model_filename = f"{config['model_basename']}*"
-        weights_files = list(Path(model_folder).glob(model_filename))
-        if len(weights_files) == 0:
-            return None
-        weights_files.sort()
-        return str(weights_files[-1])
+    def _get_weights_file_path(self, epoch: Optional[str] = "") -> str:
+        """
+        Get the path to the model weights file
+        
+        Args:
+            epoch (Optional[str]): Epoch number
+        
+        Returns:
+            str: Path to the model weights file
+        """
+        model_filename = f"{self.config.model_name}{epoch}.pt"
+        return str(Path('.') / self.config.model_path / model_filename)
+    
+    def _save_model_state(self, epoch: Optional[str] = "") -> None:
+        """
+        Save model state
+        
+        Args:
+            epoch (Optional[str]): Epoch number
+        """
+        
+        model_filename = self._get_weights_file_path(epoch)
+        
+        torch.save({
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+        }, model_filename)
+        
+        print(f"Model saved at {model_filename}")
+    
+    def _delete_model_state(self, epoch: Optional[str] = "") -> None:
+        """
+        Delete model state
+        
+        Args:
+            epoch (Optional[str]): Epoch number
+        """
+        
+        model_filename = self._get_weights_file_path(epoch)
+        
+        if os.path.exists(model_filename):
+            os.remove(model_filename)
+            print(f"Model deleted at {model_filename}")
+        else:
+            print(f"No model to delete at {model_filename}")
+    
+    def _rename_model_state(self, epoch: Optional[str] = "") -> None:
+        """
+        Change model state to default
+        
+        Args:
+            epoch (Optional[str]): Epoch number
+        """
+        
+        old_model_filename = self._get_weights_file_path(epoch)
+        new_model_filename = self._get_weights_file_path()
+        
+        if os.path.exists(old_model_filename):
+            os.rename(old_model_filename, new_model_filename)
+            print(f"Model state changed at {old_model_filename}")
+        else:
+            print(f"No model to change at {old_model_filename}")
+
+
+    def _load_model_state(self, epoch: Optional[str] = "") -> None:
+        """
+        Load model state
+        """
+    
+        if self.config.preload:
+            model_filename = self._get_weights_file_path(epoch)
+        else:
+            model_filename = None
+            
+        if model_filename:
+            print(f'Preloading model {model_filename}')
+            state = torch.load(model_filename)
+            self.model.load_state_dict(state['model_state_dict'])
+            self.optimizer.load_state_dict(state['optimizer_state_dict'])       
+        else:
+            print('No model to preload')
