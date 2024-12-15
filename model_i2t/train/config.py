@@ -17,8 +17,8 @@ class TrainArgs:
         [int], [str] : model config parameters
 
     """
-    run_parallel: str = None
-    batch_size: int = 8
+    batch_train_size: int = 50
+    batch_eval_size: int = 5
     num_epochs: int = 20
     num_classes: int = 10
     lr: int = 10**-4
