@@ -41,9 +41,11 @@ class Train():
         )
         self.optimizer: torch.optim.AdamW = torch.optim.AdamW(
             self.model.parameters(),
+            betas=(self.config.beta1, self.config.beta2),
             lr=self.config.lr,
             eps=self.config.epsilon,
-            weight_decay=self.config.weight_decay
+            weight_decay=self.config.weight_decay,
+            amsgrad=self.config.amsgrad
         )
         
         self.loss_fn: nn.CrossEntropyLoss = nn.CrossEntropyLoss(

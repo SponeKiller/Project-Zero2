@@ -21,21 +21,22 @@ class TrainArgs:
     batch_eval_size: int = 5
     num_epochs: int = 20
     num_classes: int = 10
+    
+    #Optimizer
     lr: int = 10**-4
-    train_steps: int = 1
-    eval_steps: int = 10
-    lambda_1: int = 0.01
-    lambda_2: int = 0.01
     beta1 = 0
     beta2 = 0
     epsilon = 1**-9
     weight_decay = 0
     amsgrad = False
+    
     train_ds_size = 0.9
     train_data: str = "/train/train_data/"
+    
     preload: bool = True
     model_path: str = "/model/"
-    model_name: str = "model"
+    model_name: str = "VisionTransformer"
+    
     label_smoothing: float = 0.1
     augment: bool = False  # Augment dataset
     
