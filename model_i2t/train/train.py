@@ -12,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 
 from ..main import VisionTransformer
 from config import TrainArgs
-from train.datasets.pretrain_dataset import Train_Dataset
+from model_i2t.train.datasets.pretrain.pretrain_dataset import Train_Dataset
 
 
 
