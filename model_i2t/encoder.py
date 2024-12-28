@@ -45,13 +45,7 @@ class EncoderBlock(nn.Module):
         Returns:
             torch.Tensor: output tensor
             
-        Assertions:
-            Input size should be equal to d_model
         """
-        assert self.d_model == x.size(-1), (
-            f"""Input tensor has shape {x.size(-1)},
-            but expected {self.d_model}"""
-        )
         
         for layer in self.residual:
             x = layer(x, lambda x: self.attention(x))

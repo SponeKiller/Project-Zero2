@@ -29,12 +29,8 @@ class PositionalEmbedding(nn.Module):
         Returns:
             x + pos_emb (torch.Tensor): Output tensor
             
-        Assertions:
-            Input dimension should be equal to d_model
         """
-        
-        
-        assert self.d_model == x.size(-1), f"Input dimension {x.size(-1)} should be equal to d_model {self.d_model}"
+    
         
         pos_emb = self.pos_embedding(x)
         
