@@ -359,5 +359,7 @@ class Train():
         """
         
         with open(file_path, "rb") as f:
-            data = pickle.load(f)
+            data = pickle.load(f, encoding="bytes")
+            # Convert bytes to string (value is float)
+            data = {key.decode("utf-8"): value for key, value in data.items()}
         return data
