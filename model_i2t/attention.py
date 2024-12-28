@@ -1,6 +1,5 @@
 from torch import nn
 import torch
-from typing import Optional
 
 class MultiHeadAttention(nn.Module):
     """

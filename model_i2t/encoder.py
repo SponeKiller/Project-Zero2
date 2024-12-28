@@ -1,8 +1,9 @@
 from torch import nn
 import torch
-from residual import ResidualConnection
-from attention import MultiHeadAttention
-from mlp import MLP
+
+from model_i2t.residual import ResidualConnection
+from model_i2t.attention import MultiHeadAttention
+from model_i2t.mlp import MLP
 
 class EncoderBlock(nn.Module):
     """

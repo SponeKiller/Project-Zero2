@@ -1,6 +1,7 @@
 from torch import nn
 import torch
-from gelu import Gelu
+
+from model_i2t.gelu import Gelu
 
 class FeedForward(nn.Module):
         

@@ -1,6 +1,7 @@
 from torch import nn
 import torch
-from layer_norm import LayerNorm
+
+from model_i2t.layer_norm import LayerNorm
 
 class ResidualConnection(nn.Module):
     
