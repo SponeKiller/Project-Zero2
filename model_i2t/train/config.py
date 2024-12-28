@@ -31,7 +31,8 @@ class TrainArgs:
     amsgrad = False
     
     train_ds_size = 0.9
-    train_data: str = "/train/train_data/"
+    dataset_path: str = "/train/dataset/pretrain/cifar_data_batch_1.pkl"
+    
     
     preload: bool = True
     model_path: str = "/model/"
