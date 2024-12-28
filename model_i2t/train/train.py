@@ -3,6 +3,7 @@ import json
 from typing import List, Literal, Optional, Tuple, Callable
 from tqdm import tqdm
 from pathlib import Path
+import pickle
 import inspect
 import shutil
 
@@ -158,14 +159,30 @@ class Train():
             AssertionError: if in provided path wont find any jsonl files.
         """
         
-        file_path = Path(self.config.train_data)
+        file_path = Path(self.config.dataset_path)
 
         assert file_path.is_file(), (
-            f"No jsonl files found in directory {self.config.train_data}"
+            f"File not found in directory {str(file_path)}"
         )
         
         data = []
         
+        ## Loading based on file extension
+        
+        match file_path.suffix:
+            
+            case ".jsonl":
+                Train._load_json(file_path)
+            case ".json":
+                Train._load_json(file_path)
+            case ".pkl":
+                Train._load_pkl(file_path)
+            case _:
+                raise NotImplementedError(
+                    f"Dataset loader does not support"
+                    f"{file_path.suffix} file extension"
+                )
+                
         with open(file_path, "r") as f:
             for line in f:
                                 
@@ -315,3 +332,34 @@ class Train():
             self.optimizer.load_state_dict(state['optimizer_state_dict'])       
         else:
             print('No model to preload')
+
+    @staticmethod
+    def _load_json(file_path: Path) -> List[str]:
+        """
+        Load json file
+        
+        Args:
+            file_path (Path): Path to the json file
+        
+        Returns:
+            List[str]: Data from json file
+        """
+        with open(file_path, "r") as f:
+            data = json.load(f)
+        return data
+    
+    @staticmethod
+    def _load_pkl(file_path: Path) -> List[str]:
+        """
+        Load pkl file
+        
+        Args:
+            file_path (Path): Path to the pkl file
+        
+        Returns:
+            List[str]: Data from pkl file
+        """
+        
+        with open(file_path, "rb") as f:
+            data = pickle.load(f)
+        return data
