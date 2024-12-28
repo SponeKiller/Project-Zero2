@@ -41,7 +41,5 @@ class ResidualConnection(nn.Module):
         returns:
             torch.Tensor: Output tensor
         """
-        assert (x.shape[-1] == self.d_model, 
-                f"Input dim should be {self.d_model}, but given {x.shape[-1]}")
         
         return x + sublayer(self.dropout(self.norm(x)))

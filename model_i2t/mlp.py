@@ -41,14 +41,7 @@ class MLP(nn.Module):
         Returns:
             torch.Tensor: output tensor
             
-        Assertions:
-            Input size should be equal to d_model
-            
         """
-        assert self.input_dim == x.size(-1), (
-            f"""Input tensor has shape {x.size(-1)},
-            but expected {self.input_dim}"""
-        )
         
         for layer in self.mlp:
             x = layer(x)

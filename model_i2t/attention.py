@@ -17,13 +17,8 @@ class MultiHeadAttention(nn.Module):
             num_heads (int): Number of heads
             dropout (float): Dropout rate (during training)
         
-        Assertions:
-            d_model should be multiple of num_heads
+
         """
-        
-        assert (
-            d_model % num_heads == 0
-        ),"d_model should be multiple of num_heads"
         
         
         super().__init__()
@@ -85,12 +80,7 @@ class MultiHeadAttention(nn.Module):
         Returns:
             torch.Tensor: Output tensor
         
-        Assertions:
-            Input size should be equal to d_model
         """
-        
-        assert (self.d_model == x.size(-1),
-                "Input size should be equal to d_model")
         
         # (batch_size, seq_len, d_model) -> (batch_size, seq_len, d_model)
         query = self.q(x)
