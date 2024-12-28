@@ -1,6 +1,7 @@
 from torch import nn
 import torch
-from feed_foward import FeedForward
+
+from model_i2t.feed_foward import FeedForward
 
 class MLP(nn.Module):
     """

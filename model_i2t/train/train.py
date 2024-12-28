@@ -1,19 +1,17 @@
-import os
 import json
-from typing import List, Literal, Optional, Tuple, Callable
-from tqdm import tqdm
+from typing import List, Tuple
 from pathlib import Path
 import pickle
-import inspect
-import shutil
+
 
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
+from tqdm import tqdm
 
-from ..main import VisionTransformer
-from config import TrainArgs
-from model_i2t.train.datasets.pretrain.pretrain_dataset import Train_Dataset
+from model_i2t.main import VisionTransformer
+from model_i2t.train.config import TrainArgs
+from model_i2t.train.datasets import Train_Dataset
 
 
 

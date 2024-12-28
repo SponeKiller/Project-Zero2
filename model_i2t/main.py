@@ -1,8 +1,9 @@
 from torch import nn
 import torch
-from encoder import Encoder
-from classification import Classification
-from pos_embedding import PositionalEmbedding
+
+from model_i2t.encoder import Encoder
+from model_i2t.classification import Classification
+from model_i2t.pos_embedding import PositionalEmbedding
 
 class VisionTransformer(nn.Module):
     
