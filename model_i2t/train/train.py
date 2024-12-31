@@ -180,14 +180,6 @@ class Train():
                     f"Dataset loader does not support"
                     f"{file_path.suffix} file extension"
                 )
-                
-        with open(file_path, "r") as f:
-            for line in f:
-                                
-                data.append(json.loads(line))
-             
-        return data
-        
         
     def augment_dataset(self):
         
