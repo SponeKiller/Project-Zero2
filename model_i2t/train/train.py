@@ -163,18 +163,17 @@ class Train():
             f"File not found in directory {str(file_path)}"
         )
         
-        data = []
-        
+
         ## Loading based on file extension
         
         match file_path.suffix:
             
             case ".jsonl":
-                Train._load_json(file_path)
+                return Train._load_json(file_path)
             case ".json":
-                Train._load_json(file_path)
+                return Train._load_json(file_path)
             case ".pkl":
-                Train._load_pkl(file_path)
+                return Train._load_pkl(file_path)
             case _:
                 raise NotImplementedError(
                     f"Dataset loader does not support"
