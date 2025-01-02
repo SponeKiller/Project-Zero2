@@ -116,12 +116,14 @@ class Train():
 
         train_ds_raw = ds_raw
         
+        print (ds_raw.key())
         
         if val_ds_size > 0:
             # Use part of the dataset for validation
             train_ds_raw, val_ds_raw = random_split(ds_raw, [train_ds_size, val_ds_size])
     
-    
+       
+        
     
         train_ds = dataset(train_ds_raw)
         
