@@ -111,8 +111,8 @@ class Train():
         if self.config.augment:
             self.augment_dataset(ds_raw)
         
-        train_ds_size: int = self.config.train_ds_size * len(ds_raw)
-        val_ds_size: int = len(ds_raw) - train_ds_size
+        train_ds_size = int(self.config.train_ds_size * len(ds_raw))
+        val_ds_size = int(len(ds_raw) - train_ds_size)
 
         train_ds_raw = ds_raw
         
