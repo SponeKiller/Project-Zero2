@@ -6,7 +6,7 @@ class Train_Dataset(Dataset):
     def __init__(self, ds):
         
         # Check if the dataset has the required keys
-        for key in ["data", "label"]:
+        for key in ["data", "labels"]:
             if key not in ds:
                 raise Exception(
                     f"Key '{key}' is missing in the data!"
@@ -21,5 +21,5 @@ class Train_Dataset(Dataset):
     def __getitem__(self, idx):
         return {
             "decoder_input": self.ds["data"][idx],
-            "label": self.ds["label"][idx],
+            "labels": self.ds["labels"][idx],
         }

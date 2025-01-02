@@ -219,7 +219,7 @@ class Train():
             output = self.model.forward(batch['decoder_input'].to(self.device))
 
             # Compare the output with the label
-            label: torch.Tensor = batch['label'].to(self.device) 
+            label: torch.Tensor = batch['labels'].to(self.device) 
 
             # Compute the loss using a simple cross entrophy
             loss: torch.Tensor = self.loss_fn(
@@ -258,7 +258,7 @@ class Train():
                 )
 
                 predicted_img.append(torch.argmax(output_img, dim=-1))
-                target_img.append(batch["label"])
+                target_img.append(batch["labels"])
                 
                 
                 if (predicted_img[-1] == target_img[-1]):
