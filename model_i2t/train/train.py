@@ -111,32 +111,22 @@ class Train():
         if self.config.augment:
             self.augment_dataset(ds_raw)
         
+        # Size of the training/validation dataset
         train_ds_size = int(self.config.train_ds_size * len(ds_raw))
         val_ds_size = int(len(ds_raw) - train_ds_size)
 
-        train_ds_raw = ds_raw
+        dataset = dataset(ds_raw)
         
-        print (ds_raw.keys())
-        
-        if val_ds_size > 0:
-            # Use part of the dataset for validation
-            train_ds_raw, val_ds_raw = random_split(ds_raw, [train_ds_size, val_ds_size])
+         
+        train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])
     
-       
-        
-    
-        train_ds = dataset(train_ds_raw)
-        
-        if val_ds_size > 0:
-            val_ds = dataset(val_ds_raw)
 
         train_dataloader = DataLoader(train_ds,
                                       batch_size=self.config.batch_train_size, shuffle=True)
         
         
-        if val_ds_size > 0:
-            val_dataloader = DataLoader(val_ds,
-                                        batch_size=self.config.batch_eval_size, shuffle=True)
+        val_dataloader = DataLoader(val_ds,
+                                    batch_size=self.config.batch_eval_size, shuffle=True)
             
         
         print("Dataset has been successfully loaded")
