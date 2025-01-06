@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 
 class Train_Dataset(Dataset):
 
-    def __init__(self, ds):
+    def __init__(self, ds, dtype=torch.float32):
         
         # Check if the dataset has the required keys
         for key in ["data", "labels"]:
@@ -13,13 +13,16 @@ class Train_Dataset(Dataset):
                 )
             
         super().__init__()
-        self.ds = ds 
+        self.ds = ds
+        self.dtype = dtype 
 
     def __len__(self):
         return len(self.ds)
 
     def __getitem__(self, idx):
+        decoder_input = torch.tensor(self.ds["data"][idx], dtype=self.dtype)
+        
         return {
-            "decoder_input": self.ds["data"][idx],
+            "decoder_input": decoder_input,
             "labels": self.ds["labels"][idx],
         }
