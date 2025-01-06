@@ -65,7 +65,7 @@ class Train():
             
             torch.cuda.empty_cache()
             
-            self._load_model_state(epoch)
+            self._load_model_state()
             
             self._run_training(train_ds, epoch)
 
