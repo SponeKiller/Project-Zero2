@@ -116,7 +116,7 @@ class Train():
 
         train_ds_raw = ds_raw
         
-        print (ds_raw.key())
+        print (ds_raw.keys())
         
         if val_ds_size > 0:
             # Use part of the dataset for validation
