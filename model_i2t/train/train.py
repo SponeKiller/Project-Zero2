@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
 from tqdm import tqdm
+from pathlib import Path
 
 from model_i2t.main import VisionTransformer
 from model_i2t.train.config import TrainArgs
@@ -302,17 +303,18 @@ class Train():
         """
     
         if self.config.preload:
-            model_filename = self._get_weights_file_path()
+            model_filename = Path(self._get_weights_file_path())
         else:
-            model_filename = None
+            return
             
-        if model_filename:
-            print(f'Preloading model {model_filename}')
+        
+        if model_filename.is_file():
+            print(f'Preloading model {model_filename.name}')
             state = torch.load(model_filename)
             self.model.load_state_dict(state['model_state_dict'])
-            self.optimizer.load_state_dict(state['optimizer_state_dict'])       
-        else:
-            print('No model to preload')
+            self.optimizer.load_state_dict(state['optimizer_state_dict'])
+         else:
+            print('No model to preload')       
 
     @staticmethod
     def _load_json(file_path: Path) -> List[str]:
