@@ -317,8 +317,7 @@ class Train():
         else:
             print('No model to preload')       
 
-    @staticmethod
-    def _load_json(file_path: Path) -> List[str]:
+    def _load_json(self, file_path: Path) -> List[str]:
         """
         Load json file
         
@@ -332,8 +331,7 @@ class Train():
             data = json.load(f)
         return data
     
-    @staticmethod
-    def _load_pkl(file_path: Path) -> List[str]:
+    def _load_pkl(self, file_path: Path) -> List[str]:
         """
         Load pkl file
         
@@ -348,4 +346,6 @@ class Train():
             data = pickle.load(f, encoding="bytes")
             # Convert bytes to string (value is float)
             data = {key.decode("utf-8"): value for key, value in data.items()}
+            
+        data["data"] = data["data"].reshape(-1, *self.config.image_shape)
         return data
