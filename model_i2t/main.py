@@ -15,7 +15,6 @@ class VisionTransformer(nn.Module):
                  patch_size: int, 
                  num_channels: int,
                  class_type: str,
-                 labels: list,
                  num_classes: int,
                  d_model: int,
                  num_heads: int,
@@ -37,9 +36,6 @@ class VisionTransformer(nn.Module):
                 
             class_type: str
                 The type of classification
-                
-            labels: list
-                The labels of the classification
                 
             num_classes: int
                 The number of classes
@@ -85,7 +81,6 @@ class VisionTransformer(nn.Module):
                                dropout)
         
         self.classification = Classification(class_type,
-                                             labels,
                                              d_model,
                                              num_classes)
                                              

@@ -19,7 +19,6 @@ class Classification(nn.Module):
         
         Args:
         class_type: str - "token" or "gap"
-        labels: list[str] - list of labels
         d_model: int - dimension of the model
         num_classes: int - number of classes
         
@@ -29,8 +28,6 @@ class Classification(nn.Module):
         
         self.class_type = class_type
         self.d_model = d_model
-        self.labels = labels
-        
        
             
         self.classifier = nn.Linear(d_model, num_classes)
@@ -59,7 +56,7 @@ class Classification(nn.Module):
             
         predictions = torch.argmax(self.classifier(x), dim=-1)
         
-        return [self.labels[prediction] for prediction in predictions]
+        return predictions
         
         
         
