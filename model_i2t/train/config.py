@@ -31,7 +31,7 @@ class TrainArgs:
     
     train_ds_size = 0.9
     dataset_path: str = "/train/dataset/pretrain/cifar_data_batch_1.pkl"
-    image_shape: tuple = (32, 32, 3)
+    image_shape: tuple = (3, 32, 32)
     
     
     preload: bool = True

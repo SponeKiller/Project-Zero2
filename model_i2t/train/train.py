@@ -209,7 +209,7 @@ class Train():
         )
         
         for batch in batch_iterator:
-            print(batch["decoder_input"])        
+             
             output = self.model.forward(batch['decoder_input'].to(self.device))
 
             # Compare the output with the label

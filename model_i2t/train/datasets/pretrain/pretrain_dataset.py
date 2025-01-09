@@ -21,8 +21,9 @@ class Train_Dataset(Dataset):
 
     def __getitem__(self, idx):
         decoder_input = torch.tensor(self.ds["data"][idx], dtype=self.dtype)
+        labels = torch.tensor(self.ds["labels"][idx], dtype=self.dtype)
         
         return {
             "decoder_input": decoder_input,
-            "labels": self.ds["labels"][idx],
+            "labels": labels,
         }
