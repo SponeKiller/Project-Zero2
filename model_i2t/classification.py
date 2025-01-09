@@ -10,7 +10,6 @@ class Classification(nn.Module):
     
     def __init__(self, 
                  class_type: str,
-                 labels: list[str], 
                  d_model: int, 
                  num_classes: int) -> None:
         
