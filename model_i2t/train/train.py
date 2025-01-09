@@ -162,11 +162,11 @@ class Train():
         match file_path.suffix:
             
             case ".jsonl":
-                return Train._load_json(file_path)
+                return self._load_json(file_path)
             case ".json":
-                return Train._load_json(file_path)
+                return self._load_json(file_path)
             case ".pkl":
-                return Train._load_pkl(file_path)
+                return self._load_pkl(file_path)
             case _:
                 raise NotImplementedError(
                     f"Dataset loader does not support"
