@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import torch
 
 
 @dataclass
@@ -37,6 +38,7 @@ class TrainArgs:
     preload: bool = True
     model_path: str = "/model/"
     model_name: str = "VisionTransformer"
+    dtype: torch.dtype = torch.float32
     
     label_smoothing: float = 0.1
     augment: bool = False  # Augment dataset

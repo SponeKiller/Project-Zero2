@@ -51,7 +51,7 @@ class Train():
         self.loss_fn: nn.CrossEntropyLoss = nn.CrossEntropyLoss(
             label_smoothing=self.config.label_smoothing
         ).to(self.device)
-        
+        self.model.to(self.device, dtype=self.config.dtype)
 
 
     def pretrain_training(self):
@@ -116,7 +116,7 @@ class Train():
         train_ds_size = int(self.config.train_ds_size * len(ds_raw))
         val_ds_size = int(len(ds_raw) - train_ds_size)
 
-        dataset = dataset(ds_raw)
+        dataset = dataset(ds_raw, dtype=self.config.dtype)
         
          
         train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])
