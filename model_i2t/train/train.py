@@ -213,15 +213,15 @@ class Train():
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
 
+            for name, param in self.model.named_parameters():
+                print(f"Parametr: {name}, requires_grad: {param.requires_grad}")
             
             # Compute the loss using a simple cross entrophy
   
             output: torch.Tensor = output.to(self.config.dtype)
             label: torch.Tensor = batch['labels'].to(self.device) 
-            print(f"OUTPUT: {output}{output.requires_grad}")
-            print(f"LABEL: {label}")
+        
             loss: torch.Tensor = self.loss_fn(output, label)
-            print(f"LOSS: {loss} {loss.requires_grad}")
             return
             # Backpropagate the loss
             loss.backward()
