@@ -210,16 +210,15 @@ class Train():
         
         for batch in batch_iterator:
              
+            # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
 
-            # Compare the output with the label
+            
+            # Compute the loss using a simple cross entrophy
+  
+            output: torch.Tensor = output.to(self.config.dtype)
             label: torch.Tensor = batch['labels'].to(self.device) 
 
-            print(f"LABEL{label}")
-            print(f"OUTPUT{output}")
-            print(f"LABEL DTYPE: {label.dtype}")
-            print(f"OUTPUT DTYPE: {output.dtype}")
-            # Compute the loss using a simple cross entrophy
             loss: torch.Tensor = self.loss_fn(output, label)
 
             # Backpropagate the loss
