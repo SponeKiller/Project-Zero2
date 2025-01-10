@@ -216,10 +216,7 @@ class Train():
             label: torch.Tensor = batch['labels'].to(self.device) 
 
             # Compute the loss using a simple cross entrophy
-            loss: torch.Tensor = self.loss_fn(
-                output.view(-1, self.config.num_classes),
-                label.view(-1)
-            )
+            loss: torch.Tensor = self.loss_fn(output, label)
 
             # Backpropagate the loss
             loss.backward()
