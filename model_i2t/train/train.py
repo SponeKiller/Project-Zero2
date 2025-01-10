@@ -213,7 +213,7 @@ class Train():
             output = self.model.forward(batch['decoder_input'].to(self.device))
 
             # Compare the output with the label
-            label: torch.Tensor = batch['labels'].to(self.device) 
+            label: torch.Tensor = batch['labels'].to(self.device, dtype= torch.int32) 
 
             # Compute the loss using a simple cross entrophy
             loss: torch.Tensor = self.loss_fn(output, label)
