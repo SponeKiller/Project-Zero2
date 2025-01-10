@@ -218,10 +218,10 @@ class Train():
   
             output: torch.Tensor = output.to(self.config.dtype)
             label: torch.Tensor = batch['labels'].to(self.device) 
-            print(f"OUTPUT: {output}")
+            print(f"OUTPUT: {output}{output.requires_grad}")
             print(f"LABEL: {label}")
             loss: torch.Tensor = self.loss_fn(output, label)
-            print(f"LOSS: {loss}")
+            print(f"LOSS: {loss} {loss.requires_grad}")
             return
             # Backpropagate the loss
             loss.backward()
