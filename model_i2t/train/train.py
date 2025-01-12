@@ -3,7 +3,6 @@ from typing import List, Tuple
 from pathlib import Path
 import pickle
 
-
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
@@ -39,6 +38,9 @@ class Train():
         self.device: torch.device = (
             torch.device("cuda" if torch.cuda.is_available() else "cpu")
         )
+        
+        self.base_dir = Path(__file__).resolve().parent
+        
         self.optimizer: torch.optim.AdamW = torch.optim.AdamW(
             self.model.parameters(),
             betas=(self.config.beta1, self.config.beta2),
@@ -52,7 +54,8 @@ class Train():
             label_smoothing=self.config.label_smoothing
         ).to(self.device)
         self.model.to(self.device, dtype=self.config.dtype)
-
+        
+        
 
     def pretrain_training(self):
         
@@ -150,7 +153,7 @@ class Train():
             AssertionError: if in provided path wont find any jsonl files.
         """
         
-        file_path = Path(self.config.dataset_path)
+        file_path = self.base_dir / self.config.dataset_path
 
         assert file_path.is_file(), (
             f"File not found in directory {str(file_path)}"
@@ -294,7 +297,7 @@ class Train():
         Save model state
         """
         
-        model_filename = self._get_weights_file_path()
+        model_filename = self.base_dir / self._get_weights_file_path()
         
         torch.save({ 
             'model_state_dict': self.model.state_dict(),
@@ -310,7 +313,7 @@ class Train():
         """
     
         if self.config.preload:
-            model_filename = Path(self._get_weights_file_path())
+            model_filename = self.base_dir / self._get_weights_file_path()
         else:
             return
             

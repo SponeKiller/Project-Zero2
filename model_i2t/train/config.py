@@ -1,6 +1,6 @@
+
 from dataclasses import dataclass
 import torch
-
 
 @dataclass
 class TrainArgs:
@@ -17,6 +17,7 @@ class TrainArgs:
         [int], [str] : model config parameters
 
     """
+    
     batch_train_size: int = 50
     batch_eval_size: int = 5
     num_epochs: int = 20
@@ -36,7 +37,7 @@ class TrainArgs:
     
     
     preload: bool = True
-    model_path: str = "../weights"
+    model_path: str = "/../weights"
     model_name: str = "VisionTransformer"
     dtype: torch.dtype = torch.float32
     
