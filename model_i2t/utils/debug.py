@@ -22,6 +22,6 @@ class Debug:
         """
         
         dot = make_dot(tensor, params=dict(model.named_parameters()))
-        dot.format = 'png'
+        dot.format = 'svg'
         dot.render(name, cleanup=True)
         return dot
