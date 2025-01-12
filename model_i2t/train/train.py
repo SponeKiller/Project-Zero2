@@ -216,7 +216,7 @@ class Train():
             # Compute the loss using a simple cross entrophy
   
             output: torch.Tensor = output.to(self.config.dtype)
-            Debug.render_calc_graph(self.model, loss, f"Output_Graph {epoch}")
+            Debug.render_calc_graph(self.model, output, f"Output_Graph {epoch}")
             
             label: torch.Tensor = batch['labels'].to(self.device) 
             
@@ -255,7 +255,7 @@ class Train():
                     batch["decoder_input"].to(self.device)
                 )
 
-                predicted_img.append(torch.argmax(output_img, dim=-1))
+                predicted_img.append(output_img)
                 target_img.append(batch["labels"])
                 
                 
