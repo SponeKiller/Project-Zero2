@@ -36,7 +36,7 @@ class TrainArgs:
     
     
     preload: bool = True
-    model_path: str = "/model/"
+    model_path: str = "../weights"
     model_name: str = "VisionTransformer"
     dtype: torch.dtype = torch.float32
     
