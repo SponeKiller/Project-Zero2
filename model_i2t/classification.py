@@ -52,10 +52,15 @@ class Classification(nn.Module):
             x = torch.mean(x, 
                            dim=list(range(1, len(x.shape) - 1)), 
                            keepdim=False)
-            
-        predictions = torch.argmax(self.classifier(x), dim=-1)
         
-        return predictions
+        x = self.classifier(x)
+        
+        
+        if (self.training == False):
+            # Return prediction if not training mode
+            x = torch.argmax(x, dim=-1)
+        
+        return x
         
         
         

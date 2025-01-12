@@ -13,7 +13,7 @@ from pathlib import Path
 from model_i2t.main import VisionTransformer
 from model_i2t.train.config import TrainArgs
 from model_i2t.train.datasets import Train_Dataset
-
+from model_i2t.utils.debug import Debug
 
 
 
@@ -212,20 +212,22 @@ class Train():
              
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
-
-            for name, param in self.model.named_parameters():
-                print(f"Parametr: {name}, requires_grad: {param.requires_grad}")
             
             # Compute the loss using a simple cross entrophy
   
             output: torch.Tensor = output.to(self.config.dtype)
+            Debug.render_calc_graph(self.model, loss, f"Output_Graph {epoch}")
+            
             label: torch.Tensor = batch['labels'].to(self.device) 
-        
+            
+            
             loss: torch.Tensor = self.loss_fn(output, label)
-            return
+            
             # Backpropagate the loss
             loss.backward()
 
+            Debug.render_calc_graph(self.model, loss, f"Loss_Graph {epoch}")
+            
             # Update the weights
             self.optimizer.step()
             self.optimizer.zero_grad(set_to_none=True)
