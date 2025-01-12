@@ -254,9 +254,10 @@ class Train():
                 output_img = self.model.forward(
                     batch["decoder_input"].to(self.device)
                 )
+                
 
                 predicted_img.append(output_img)
-                target_img.append(batch["labels"])
+                target_img.append(batch["labels"].to(self.device))
                 
                 
                 if (predicted_img[-1] == target_img[-1]):
