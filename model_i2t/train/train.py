@@ -210,7 +210,7 @@ class Train():
             tqdm(train_ds, 
                  desc=f"Processing epoch {epoch:02d}")
         )
-        print(train_ds.shape)
+        print(next(iter(dataloader)).shape)
         for batch in batch_iterator:
             print(batch.shape)
             # Model prediction 
