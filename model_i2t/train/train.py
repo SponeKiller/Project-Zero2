@@ -211,7 +211,8 @@ class Train():
                  desc=f"Processing epoch {epoch:02d}")
         )
         decoder_input, labels = next(iter(train_ds))
-        print(decoder_input.shape)
+        print(train_ds)
+        print(decoder_input)
         print(labels)
         for batch in batch_iterator:
             print(batch.shape)
