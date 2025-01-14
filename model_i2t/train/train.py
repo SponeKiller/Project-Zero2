@@ -155,6 +155,10 @@ class Train():
         
         file_path = self.base_dir / self.config.dataset_path
         print(file_path)
+        print("Base dir: ")
+        print(self.base_dir)
+        print("Dataset path: ")
+        print(self.config.dataset_path)
         assert file_path.is_file(), (
             f"File not found in directory {str(file_path)}"
         )
