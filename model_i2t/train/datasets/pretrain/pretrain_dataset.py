@@ -14,15 +14,23 @@ class Train_Dataset(Dataset):
             
         super().__init__()
         self.ds = ds
-        self.dtype = dtype 
+        self.labels = torch.tensor(self.ds["labels"], dtype=torch.long)
+        self.decoder_input = torch.tensor(self.ds["data"], dtype=dtype)
+        
+        if (self.decoder_input.max() > 1 and self.decoder_input.min() == 0):
+            # Normalize the data
+            print("Normalizing the data to range [0, 1]")
+            self.decoder_input = self.decoder_input / self.decoder_input.max()
+        else:
+            raise ValueError("Data should be normalized between 0 and 1")
+        
 
     def __len__(self):
         return len(self.ds)
 
     def __getitem__(self, idx):
-        decoder_input = torch.tensor(self.ds["data"][idx], dtype=self.dtype)
         
         return {
-            "decoder_input": decoder_input,
-            "labels": self.ds["labels"][idx],
+            "decoder_input": self.decoder_input[idx],
+            "labels": self.labels[idx],
         }

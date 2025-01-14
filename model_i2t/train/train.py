@@ -211,11 +211,9 @@ class Train():
                  desc=f"Processing epoch {epoch:02d}")
         )
        
-        print(train_ds)
-        print(next(iter(train_ds)))
         
         for batch in batch_iterator:
-            print(batch)
+            print(batch["decoder_input"].shape)
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
