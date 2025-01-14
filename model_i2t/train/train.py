@@ -210,12 +210,12 @@ class Train():
             tqdm(train_ds, 
                  desc=f"Processing epoch {epoch:02d}")
         )
-        decoder_input, labels = next(iter(train_ds))
+       
         print(train_ds)
-        print(decoder_input)
-        print(labels)
+        print(next(iter(train_ds)))
+        
         for batch in batch_iterator:
-            print(batch.shape)
+            print(batch)
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
