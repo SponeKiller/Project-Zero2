@@ -32,12 +32,12 @@ class TrainArgs:
     amsgrad = False
     
     train_ds_size = 0.9
-    dataset_path: str = "/dataset/pretrain/cifar_data_batch_1.pkl"
+    dataset_path: str = "dataset/pretrain/cifar_data_batch_1.pkl"
     image_shape: tuple = (3, 32, 32)
     
     
     preload: bool = True
-    model_path: str = "/../weights"
+    model_path: str = "../weights"
     model_name: str = "VisionTransformer"
     dtype: torch.dtype = torch.float32
     
