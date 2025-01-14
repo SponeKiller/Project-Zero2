@@ -358,4 +358,6 @@ class Train():
             data = {key.decode("utf-8"): value for key, value in data.items()}
             
         data["data"] = data["data"].reshape(-1, *self.config.image_shape)
+        
+        print(f"Data shape: {data['data'].shape}")
         return data
