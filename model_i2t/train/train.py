@@ -210,7 +210,7 @@ class Train():
             tqdm(train_ds, 
                  desc=f"Processing epoch {epoch:02d}")
         )
-        print(f"N{len(train_ds)}")
+       
         
         for batch in batch_iterator:
             print(batch["decoder_input"].shape)
