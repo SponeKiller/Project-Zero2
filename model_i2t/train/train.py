@@ -23,23 +23,23 @@ class Train():
     
     """
 
-    def __init__(self, model:VisionTransformer, config:TrainArgs):
+    def __init__(self, model:VisionTransformer):
         
         """
         Inicialize model training
         
         Args:
             model (VisionTransformer): Model to train
-            config (TrainArgs): Configuration for training model
         """
         
         self.model: VisionTransformer = model
-        self.config: TrainArgs = config
+        self.config: TrainArgs = TrainArgs()
         self.device: torch.device = (
             torch.device("cuda" if torch.cuda.is_available() else "cpu")
         )
         
         self.base_dir = Path(__file__).resolve().parent
+        
         
         self.optimizer: torch.optim.AdamW = torch.optim.AdamW(
             self.model.parameters(),
@@ -210,7 +210,7 @@ class Train():
             tqdm(train_ds, 
                  desc=f"Processing epoch {epoch:02d}")
         )
-       
+        print(f"N{len(train_ds)}")
         
         for batch in batch_iterator:
             print(batch["decoder_input"].shape)
