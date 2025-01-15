@@ -122,14 +122,18 @@ class Train():
         
         # Size of the training/validation dataset
         
-      
+        num_examples: np.ndarray = ds_raw['data'].shape[0]
+        
+        train_ds_size = int(
+            self.config.train_ds_size * 
+            num_examples
+        )
+        
+        val_ds_size = int(num_examples - train_ds_size)
 
         dataset = dataset(ds_raw, dtype=self.config.dtype)
         
-        train_ds, val_ds = random_split(
-            dataset,
-            [self.config.train_ds_size, self.config.val_ds_size]
-        )
+        train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])
 
 
         train_dataloader = DataLoader(train_ds,

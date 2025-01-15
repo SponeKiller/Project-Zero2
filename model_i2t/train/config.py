@@ -32,7 +32,6 @@ class TrainArgs:
     amsgrad = False
     
     train_ds_size = 0.9
-    val_ds_size = 0.1
     dataset_path: str = "datasets/pretrain/cifar_data_batch_1.pkl"
     image_shape: tuple = (3, 32, 32)
     
