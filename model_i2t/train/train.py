@@ -2,6 +2,7 @@ import json
 from typing import List, Tuple
 from pathlib import Path
 import pickle
+import os
 
 import torch
 import torch.nn as nn
@@ -296,7 +297,7 @@ class Train():
             str: Path to the model weights file
         """
         weights_path = f"{self.config.model_name}.pt"
-        return str(self.config.model_path / weights_path)
+        return os.path.join(self.config.model_path, weights_path)
     
     
     def _save_model_state(self) -> None:
