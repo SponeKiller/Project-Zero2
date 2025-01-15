@@ -131,6 +131,7 @@ class Train():
         
         val_ds_size = int(num_examples - train_ds_size)
 
+        
         dataset = dataset(ds_raw, dtype=self.config.dtype)
         
         train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])

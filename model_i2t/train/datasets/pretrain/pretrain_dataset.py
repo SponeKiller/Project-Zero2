@@ -11,11 +11,14 @@ class Train_Dataset(Dataset):
                 raise Exception(
                     f"Key '{key}' is missing in the data!"
                 )
-            
+        
         super().__init__()
         self.ds = ds
         self.labels = torch.tensor(self.ds["labels"], dtype=torch.long)
         self.decoder_input = torch.tensor(self.ds["data"], dtype=dtype)
+        
+        if(self.decoder_input.shape[0] != self.labels.shape[0]):
+            raise ValueError("The number of samples in the data and labels should be the same")
         
         if (self.decoder_input.max() > 1 and self.decoder_input.min() == 0):
             # Normalize the data
@@ -26,7 +29,7 @@ class Train_Dataset(Dataset):
         
 
     def __len__(self):
-        return len(self.ds)
+        return len(self.decoder_input)
 
     def __getitem__(self, idx):
         
