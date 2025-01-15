@@ -9,6 +9,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
 from tqdm import tqdm
 from pathlib import Path
+import numpy as np
 
 from model_i2t.main import VisionTransformer
 from model_i2t.train.config import TrainArgs
@@ -115,23 +116,25 @@ class Train():
 
         #loading data
         ds_raw = self._load_dataset()
-        
+             
         if self.config.augment:
             self.augment_dataset()
         
-        print(f"Dataset_raw length: {len(ds_raw)}")
         # Size of the training/validation dataset
-        train_ds_size = int(self.config.train_ds_size * len(ds_raw))
-        val_ds_size = int(len(ds_raw) - train_ds_size)
+        
+        num_examples: np.ndarray = ds_raw['data'].shape[0]
+        
+        train_ds_size = int(
+            self.config.train_ds_size * 
+            num_examples
+        )
+        
+        val_ds_size = int(num_examples - train_ds_size)
 
         dataset = dataset(ds_raw, dtype=self.config.dtype)
         
-        print(f"Dataset length: {len(dataset)}")
-
         train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])
 
-        print(f"Train dataset length: {len(train_ds)}")
-        print(f"Validation dataset length: {len(val_ds)}")
 
         train_dataloader = DataLoader(train_ds,
                                       batch_size=self.config.batch_train_size, shuffle=True)
