@@ -40,7 +40,7 @@ class Train():
         )
         
         self.base_dir = Path(__file__).resolve().parent
-        
+        self.model_filename = self.base_dir / self._get_weights_file_path()
         self.optimizer: torch.optim.AdamW = torch.optim.AdamW(
             self.model.parameters(),
             betas=(self.config.beta1, self.config.beta2),
@@ -75,7 +75,10 @@ class Train():
 
             val_accuracy = self._run_validation(validation_ds, epoch)
 
-            if val_accuracy > best_val_accuracy:
+            if (
+                val_accuracy > best_val_accuracy or 
+                self.model_filename.is_file() == False
+            ):
                 # Save new best model           
                 best_val_accuracy = val_accuracy
                 self._save_model_state()
@@ -121,9 +124,12 @@ class Train():
 
         dataset = dataset(ds_raw, dtype=self.config.dtype)
         
-         
+        print(f"Dataset length: {len(dataset)}")
+
         train_ds, val_ds = random_split(dataset, [train_ds_size, val_ds_size])
-    
+
+        print(f"Train dataset length: {len(train_ds)}")
+        print(f"Validation dataset length: {len(val_ds)}")
 
         train_dataloader = DataLoader(train_ds,
                                       batch_size=self.config.batch_train_size, shuffle=True)
@@ -289,8 +295,8 @@ class Train():
         Returns:
             str: Path to the model weights file
         """
-        model_filename = f"{self.config.model_name}.pt"
-        return str(Path('.') / self.config.model_path / model_filename)
+        weights_path = f"{self.config.model_name}.pt"
+        return str(self.config.model_path / weights_path)
     
     
     def _save_model_state(self) -> None:
@@ -298,12 +304,12 @@ class Train():
         Save model state
         """
         
-        model_filename = self.base_dir / self._get_weights_file_path()
+        
         
         torch.save({ 
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
-        }, model_filename)
+        }, self.model_filename)
         
     
 
@@ -313,15 +319,14 @@ class Train():
         Load model state
         """
     
-        if self.config.preload:
-            model_filename = self.base_dir / self._get_weights_file_path()
-        else:
+        if self.config.preload == False:
             return
             
+            
         
-        if model_filename.is_file():
-            print(f'Preloading model {model_filename.name}')
-            state = torch.load(model_filename)
+        if self.model_filename.is_file():
+            print(f'Preloading model {self.model_filename.name}')
+            state = torch.load(self.model_filename)
             self.model.load_state_dict(state['model_state_dict'])
             self.optimizer.load_state_dict(state['optimizer_state_dict'])
         else:
