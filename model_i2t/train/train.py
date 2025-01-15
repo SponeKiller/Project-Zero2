@@ -117,8 +117,9 @@ class Train():
         ds_raw = self._load_dataset()
         
         if self.config.augment:
-            self.augment_dataset(ds_raw)
+            self.augment_dataset()
         
+        print(f"Dataset_raw length: {len(ds_raw)}")
         # Size of the training/validation dataset
         train_ds_size = int(self.config.train_ds_size * len(ds_raw))
         val_ds_size = int(len(ds_raw) - train_ds_size)
