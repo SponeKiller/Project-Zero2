@@ -230,7 +230,8 @@ class Train():
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
             # Compute the loss using a simple cross entrophy
-  
+            weights_before = {name: param.clone() for name, param in self.model.named_parameters()}
+            
             output: torch.Tensor = output.to(self.config.dtype)
             Debug.render_calc_graph(self.model, output, f"Output_Graph {epoch}")
             
@@ -249,7 +250,8 @@ class Train():
             # Update the weights
             self.optimizer.step()
             self.optimizer.zero_grad(set_to_none=True)
-
+            for name, param in self.model.named_parameters():
+                print(f"{name} - váhy změněny: {not torch.equal(weights_before[name], param)}")
     def _run_validation(self, 
                         validation_ds: torch.Tensor,
                         epoch: int) -> None:
