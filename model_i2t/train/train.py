@@ -237,8 +237,9 @@ class Train():
             label: torch.Tensor = batch['labels'].to(self.device) 
             
             loss: torch.Tensor = self.loss_fn(output, label)
-            
-            print(f"Loss: {loss}")
+            print(f"OUTPUT: {output[0]}")
+            print(f"LABEL: {label[0]}")            
+            print(f"LOSS: {loss}")
             
             # Backpropagate the loss
             loss.backward()
