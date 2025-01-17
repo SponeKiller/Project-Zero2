@@ -223,14 +223,12 @@ class Train():
                  desc=f"Processing epoch {epoch:02d}")
         )
        
-        print(f"DS length: {len(train_ds)}")
         for batch in batch_iterator:
             print(batch["decoder_input"].shape)
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
             # Compute the loss using a simple cross entrophy
-            weights_before = {name: param.clone() for name, param in self.model.named_parameters()}
             
             output: torch.Tensor = output.to(self.config.dtype)
             Debug.render_calc_graph(self.model, output, f"Output_Graph {epoch}")
@@ -250,8 +248,7 @@ class Train():
             # Update the weights
             self.optimizer.step()
             self.optimizer.zero_grad(set_to_none=True)
-            for name, param in self.model.named_parameters():
-                print(f"{name} - váhy změněny: {not torch.equal(weights_before[name], param)}")
+  
     def _run_validation(self, 
                         validation_ds: torch.Tensor,
                         epoch: int) -> None:
@@ -261,7 +258,7 @@ class Train():
         total = 0
         correct = 0
         predicted_img = []
-        target_img = []
+        labels = []
         
         batch_iterator: torch.Tensor = (
             tqdm(validation_ds, 
@@ -277,17 +274,16 @@ class Train():
                 
 
                 predicted_img.append(output_img)
-                target_img.append(batch["labels"].to(self.device))
+                labels.append(batch["labels"].to(self.device))
                 
                 
-                if (predicted_img[-1] == target_img[-1]):
-                    correct += 1
+                correct += (predicted_img == labels).sum().item()  
+                total += labels.size(0)
                 
-                total += 1
         
         accuracy = (correct / total) * 100
         
-        print(f"{f'TARGET: ':>12}{target_img}")
+        print(f"{f'TARGET: ':>12}{labels}")
         print(f"{f'PREDICTED: ':>12}{output_img}")
         print(f"ACCURACY: {accuracy} %")
         
