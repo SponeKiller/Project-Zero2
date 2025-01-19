@@ -236,8 +236,9 @@ class Train():
             label: torch.Tensor = batch['labels'].to(self.device) 
             
             loss: torch.Tensor = self.loss_fn(output, label)
-            print(f"OUTPUT: {output[0]}")
-            print(f"LABEL: {label[0]}")            
+            print(f"OUTPUTS: {torch.argmax(output, dim=-1)}")
+            print(f"LABELS: {label}")    
+            print(f"ACCURACY: {torch.argmax(output, dim=-1) == label}")        
             print(f"LOSS: {loss}")
             
             # Backpropagate the loss
