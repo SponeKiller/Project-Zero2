@@ -238,7 +238,7 @@ class Train():
             loss: torch.Tensor = self.loss_fn(output, label)
             print(f"OUTPUTS: {torch.argmax(output, dim=-1)}")
             print(f"LABELS: {label}")    
-            print(f"ACCURACY: {torch.argmax(output, dim=-1) == label}")        
+            print(f"ACCURACY: {(torch.argmax(output, dim=-1) == label).sum().item() / label.size(0)}")        
             print(f"LOSS: {loss}")
             
             # Backpropagate the loss
