@@ -4,6 +4,7 @@ import torch
 from model_i2t.encoder import Encoder
 from model_i2t.classification import Classification
 from model_i2t.pos_embedding import PositionalEmbedding
+from model_i2t.layer_norm import LayerNorm
 
 class VisionTransformer(nn.Module):
     
@@ -15,7 +16,6 @@ class VisionTransformer(nn.Module):
                  patch_size: int, 
                  num_channels: int,
                  class_type: str,
-                 labels: list,
                  num_classes: int,
                  d_model: int,
                  num_heads: int,
@@ -37,9 +37,6 @@ class VisionTransformer(nn.Module):
                 
             class_type: str
                 The type of classification
-                
-            labels: list
-                The labels of the classification
                 
             num_classes: int
                 The number of classes
@@ -85,9 +82,10 @@ class VisionTransformer(nn.Module):
                                dropout)
         
         self.classification = Classification(class_type,
-                                             labels,
                                              d_model,
                                              num_classes)
+        
+        self.layer_norm = LayerNorm(d_model)
                                              
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -121,6 +119,8 @@ class VisionTransformer(nn.Module):
         x = self.pos_embedding(x)
         
         x = self.encoder(x)
+        
+        x = self.layer_norm(x)
         
         x = self.classification(x)
         

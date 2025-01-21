@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 
+from dataclasses import dataclass
+import torch
 
 @dataclass
 class TrainArgs:
@@ -16,6 +17,7 @@ class TrainArgs:
         [int], [str] : model config parameters
 
     """
+    
     batch_train_size: int = 50
     batch_eval_size: int = 5
     num_epochs: int = 20
@@ -30,12 +32,14 @@ class TrainArgs:
     amsgrad = False
     
     train_ds_size = 0.9
-    dataset_path: str = "/train/dataset/pretrain/cifar_data_batch_1.pkl"
+    dataset_path: str = "datasets/pretrain/cifar_data_batch_1.pkl"
+    image_shape: tuple = (3, 32, 32)
     
     
     preload: bool = True
-    model_path: str = "/model/"
+    model_path: str = "../weights"
     model_name: str = "VisionTransformer"
+    dtype: torch.dtype = torch.float32
     
     label_smoothing: float = 0.1
     augment: bool = False  # Augment dataset

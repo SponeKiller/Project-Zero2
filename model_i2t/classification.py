@@ -10,7 +10,6 @@ class Classification(nn.Module):
     
     def __init__(self, 
                  class_type: str,
-                 labels: list[str], 
                  d_model: int, 
                  num_classes: int) -> None:
         
@@ -19,7 +18,6 @@ class Classification(nn.Module):
         
         Args:
         class_type: str - "token" or "gap"
-        labels: list[str] - list of labels
         d_model: int - dimension of the model
         num_classes: int - number of classes
         
@@ -29,8 +27,6 @@ class Classification(nn.Module):
         
         self.class_type = class_type
         self.d_model = d_model
-        self.labels = labels
-        
        
             
         self.classifier = nn.Linear(d_model, num_classes)
@@ -56,10 +52,15 @@ class Classification(nn.Module):
             x = torch.mean(x, 
                            dim=list(range(1, len(x.shape) - 1)), 
                            keepdim=False)
-            
-        predictions = torch.argmax(self.classifier(x), dim=-1)
         
-        return [self.labels[prediction] for prediction in predictions]
+        x = self.classifier(x)
+        
+        
+        if (self.training == False):
+            # Return prediction if not training mode
+            x = torch.argmax(x, dim=-1)
+        
+        return x
         
         
         
