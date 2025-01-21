@@ -4,6 +4,7 @@ import torch
 from model_i2t.encoder import Encoder
 from model_i2t.classification import Classification
 from model_i2t.pos_embedding import PositionalEmbedding
+from model_i2t.layer_norm import LayerNorm
 
 class VisionTransformer(nn.Module):
     
@@ -83,6 +84,8 @@ class VisionTransformer(nn.Module):
         self.classification = Classification(class_type,
                                              d_model,
                                              num_classes)
+        
+        self.layer_norm = LayerNorm(d_model)
                                              
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -116,6 +119,8 @@ class VisionTransformer(nn.Module):
         x = self.pos_embedding(x)
         
         x = self.encoder(x)
+        
+        x = self.layer_norm(x)
         
         x = self.classification(x)
         
