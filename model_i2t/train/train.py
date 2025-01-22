@@ -269,14 +269,10 @@ class Train():
         with torch.no_grad():
             for batch in batch_iterator:
 
-                output_img = self.model.forward(
-                    batch["decoder_input"].to(self.device)
-                )
+                input = batch["decoder_input"].to(self.device)
+                labels = batch["labels"].to(self.device)
                 
-
-                predicted_img.append(output_img)
-                labels.append(batch["labels"].to(self.device))
-                
+                predicted_img = self.model.forward(input)
                 
                 correct += (predicted_img == labels).sum().item()  
                 total += labels.size(0)
@@ -285,7 +281,7 @@ class Train():
         accuracy = (correct / total) * 100
         
         print(f"{f'TARGET: ':>12}{labels}")
-        print(f"{f'PREDICTED: ':>12}{output_img}")
+        print(f"{f'PREDICTED: ':>12}{predicted_img}")
         print(f"ACCURACY: {accuracy} %")
         
         return accuracy
