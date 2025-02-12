@@ -330,7 +330,7 @@ class Train():
             print(f'Preloading model {self.model_filename.name}')
             state = torch.load(self.model_filename)
             self.model.load_state_dict(state['model_state_dict'], strict=self.config.strict_load)
-            self.optimizer.load_state_dict(state['optimizer_state_dict'], strict=self.config.strict_load)
+            self.optimizer.load_state_dict(state['optimizer_state_dict'])
         else:
             print('No model to preload')       
 
