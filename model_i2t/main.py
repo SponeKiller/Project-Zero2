@@ -65,7 +65,7 @@ class VisionTransformer(nn.Module):
         #
         super().__init__()
     
-        
+        self.cls_token = nn.Parameter(torch.randn(1, 1, d_model))
         
         self.patch_embedding = nn.Conv2d(in_channels=num_channels,
                                          out_channels=d_model,            kernel_size=patch_size)
@@ -86,6 +86,8 @@ class VisionTransformer(nn.Module):
                                              num_classes)
         
         self.layer_norm = LayerNorm(d_model)
+        
+        
                                              
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -115,6 +117,11 @@ class VisionTransformer(nn.Module):
         
         #b, c, h, w -> b, p, c
         x = x.view(x.shape[0], -1, x.shape[1])
+        
+        # add cls token
+        cls_tokens = self.cls_token.expand(x.shape[0], -1, -1)
+        x = torch.cat((cls_tokens, x), dim=1)
+        
         
         x = self.pos_embedding(x)
         
