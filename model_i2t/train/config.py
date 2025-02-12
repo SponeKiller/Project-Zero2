@@ -40,6 +40,7 @@ class TrainArgs:
     model_path: str = "../weights"
     model_name: str = "VisionTransformer"
     dtype: torch.dtype = torch.float32
+    strict_load: bool = True # strict loading of model/optimizer state_dict
     
     label_smoothing: float = 0.1
     augment: bool = False  # Augment dataset
