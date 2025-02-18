@@ -335,7 +335,7 @@ class Train():
                 strict=self.config.strict_load
             )
             
-            if missing_keys or unexpected_keys:
+            if missing_keys == False and unexpected_keys == False:
                 # Can not use if exists new parameters in model
                 self.optimizer.load_state_dict(state['optimizer_state_dict'])
         else:
