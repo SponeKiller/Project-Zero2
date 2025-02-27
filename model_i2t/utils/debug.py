@@ -11,7 +11,8 @@ class Debug:
     @staticmethod
     def render_calc_graph(model: VisionTransformer,
                           tensor: torch.Tensor, 
-                          name: str):
+                          model_name: str,
+                          file_name: str,):
         """
         Render the calculation graph of the model
         
@@ -23,5 +24,5 @@ class Debug:
         
         dot = make_dot(tensor, params=dict(model.named_parameters()))
         dot.format = 'svg'
-        dot.render(name, cleanup=True)
+        dot.render(file_name + model_name, cleanup=True)
         return dot
