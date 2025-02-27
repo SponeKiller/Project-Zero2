@@ -231,7 +231,12 @@ class Train():
             # Compute the loss using a simple cross entrophy
             
             output: torch.Tensor = output.to(self.config.dtype)
-            Debug.render_calc_graph(self.model, output, f"Output_Graph {epoch}")
+            Debug.render_calc_graph(
+                self.model, 
+                output, 
+                self.config.model_name,
+                f"Output_Graph {epoch}"
+            )
             
             label: torch.Tensor = batch['labels'].to(self.device) 
             
@@ -244,7 +249,12 @@ class Train():
             # Backpropagate the loss
             loss.backward()
 
-            Debug.render_calc_graph(self.model, loss, f"Loss_Graph {epoch}")
+            Debug.render_calc_graph(
+                self.model, 
+                loss,
+                self.config.model_name, 
+                f"Loss_Graph {epoch}"
+            )
             
             # Update the weights
             self.optimizer.step()
