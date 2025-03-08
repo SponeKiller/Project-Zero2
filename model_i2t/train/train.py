@@ -222,12 +222,13 @@ class Train():
             
         batch_iterator: torch.Tensor = (
             tqdm(train_ds, 
-                 desc=f"Processing epoch {epoch:02d}",
-                 position=0,
-                 leave=True)
+                 desc=f"Processing epoch {epoch:02d}")
         )
        
         for batch in batch_iterator:
+            # New line after batch iterator
+            print("")
+            
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
@@ -269,6 +270,9 @@ class Train():
 
         with torch.no_grad():
             for batch in batch_iterator:
+                
+                # New line after batch iterator
+                print("")
 
                 input = batch["decoder_input"].to(self.device)
                 labels = batch["labels"].to(self.device)

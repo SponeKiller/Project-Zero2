@@ -98,7 +98,7 @@ class Debug:
         
         self.accuracy.append(correct / len(prediction))
         
-        if curr_epoch % avg_per_epochs == 0 and avg_per_epochs > 1:
+        if curr_epoch > avg_per_epochs:
             print(
                 f"AVG {type.upper()} ACCURACY PER {avg_per_epochs}: "
                 f"{(sum(self.accuracy) / avg_per_epochs) * 100} %"
