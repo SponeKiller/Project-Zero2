@@ -45,6 +45,10 @@ class TrainArgs:
     label_smoothing: float = 0.1
     augment: bool = False  # Augment dataset
     
+    # Debugging
+    debug: bool = True
+    debug_path: str = "debug/" + model_name + ".txt"
+    
 
 
 
