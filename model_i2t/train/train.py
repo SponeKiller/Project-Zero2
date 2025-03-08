@@ -57,6 +57,8 @@ class Train():
         ).to(self.device)
         self.model.to(self.device, dtype=self.config.dtype)
         
+        self.debug = Debug(self.config.num_epochs, 
+                           self.base_dir / self.config.debug_path,            self.config.debug)
         
 
     def pretrain_training(self):
@@ -224,37 +226,24 @@ class Train():
         )
        
         for batch in batch_iterator:
-            print(batch["decoder_input"].shape)
             # Model prediction 
             output = self.model.forward(batch['decoder_input'].to(self.device))
             
             # Compute the loss using a simple cross entrophy
             
             output: torch.Tensor = output.to(self.config.dtype)
-            Debug.render_calc_graph(
-                self.model, 
-                output, 
-                self.config.model_name,
-                f"Output_Graph {epoch}"
-            )
             
-            label: torch.Tensor = batch['labels'].to(self.device) 
+            labels: torch.Tensor = batch['labels'].to(self.device) 
             
-            loss: torch.Tensor = self.loss_fn(output, label)
-            print(f"OUTPUTS: {torch.argmax(output, dim=-1)}")
-            print(f"LABELS: {label}")    
-            print(f"ACCURACY: {(torch.argmax(output, dim=-1) == label).sum().item() / label.size(0)}")        
-            print(f"LOSS: {loss}")
+            loss: torch.Tensor = self.loss_fn(output, labels)
             
+            prediction = torch.argmax(output, dim=-1)
+            
+            self.debug.render_loss(loss, epoch, 5)
+            self.debug.render_accuracy(prediction, labels, epoch, 5)
+   
             # Backpropagate the loss
             loss.backward()
-
-            Debug.render_calc_graph(
-                self.model, 
-                loss,
-                self.config.model_name, 
-                f"Loss_Graph {epoch}"
-            )
             
             # Update the weights
             self.optimizer.step()
@@ -284,15 +273,13 @@ class Train():
                 
                 predicted_img = self.model.forward(input)
                 
+                self.debug.render_accuracy(predicted_img, labels, epoch, 5, "validation")
+                
                 correct += (predicted_img == labels).sum().item()  
                 total += labels.size(0)
                 
         
         accuracy = (correct / total) * 100
-        
-        print(f"{f'TARGET: ':>12}{labels}")
-        print(f"{f'PREDICTED: ':>12}{predicted_img}")
-        print(f"ACCURACY: {accuracy} %")
         
         return accuracy
         
