@@ -56,13 +56,13 @@ class Debug:
         if self.enable is False:
             return
   
-        print(f"{type.upper} LOSS: {loss}")
+        print(f"{type.upper()} LOSS: {loss}")
  
         self.loss += loss
               
         if curr_epoch % avg_per_epochs == 0 and avg_per_epochs > 1:
             print(
-                f"AVG {type.upper} LOSS PER {avg_per_epochs}: "
+                f"AVG {type.upper()} LOSS PER {avg_per_epochs}: "
                 f"{self.loss / avg_per_epochs}"
             )
             
@@ -71,7 +71,7 @@ class Debug:
         self.total_loss += loss
         
         if self.num_epochs == curr_epoch:
-            print(f"FINAL AVG {type.upper} LOSS: {self.loss / curr_epoch}")
+            print(f"FINAL AVG {type.upper()} LOSS: {self.loss / curr_epoch}")
                 
     def render_accuracy(self, 
                         prediction: torch.Tensor, 
@@ -85,18 +85,18 @@ class Debug:
             return
         
         if show_prediction:
-            print(f"{type.upper} PREDICTION: {prediction}")
-            print(f"{type.upper} LABELS: {labels}")
+            print(f"{type.upper()} PREDICTION: {prediction}")
+            print(f"{type.upper()} LABELS: {labels}")
         
         correct = (prediction == labels).sum().item()
         
-        print(f"{type.upper} ACCURACY: {correct / len(prediction)}")
+        print(f"{type.upper()} ACCURACY: {correct / len(prediction)}")
         
         self.accuracy += correct / len(prediction)
         
         if curr_epoch % avg_per_epochs == 0 and avg_per_epochs > 1:
             print(
-                f"AVG {type.upper} ACCURACY PER "
+                f"AVG {type.upper()} ACCURACY PER "
                 f"{avg_per_epochs}: {self.accuracy / avg_per_epochs}"
             )
             self.accuracy = 0
@@ -105,7 +105,7 @@ class Debug:
         
         if self.num_epochs == curr_epoch:
             print(
-                f"FINAL AVG {type.upper} ACCURACY: "
+                f"FINAL AVG {type.upper()} ACCURACY: "
                 f"{self.accuracy / curr_epoch}"
             )
 
