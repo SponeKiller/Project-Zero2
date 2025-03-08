@@ -19,9 +19,9 @@ class Debug:
     ):
         self.enable = enable
         self.num_epochs = num_epochs
-        self.loss = 0
+        self.loss = []
         self.total_loss = 0
-        self.accuracy = 0
+        self.accuracy = []
         self.total_accuracy = 0
         
         
@@ -58,20 +58,22 @@ class Debug:
   
         print(f"{type.upper()} LOSS: {loss}")
  
-        self.loss += loss
+        self.loss.append(loss)
               
-        if curr_epoch % avg_per_epochs == 0 and avg_per_epochs > 1:
+        if curr_epoch > avg_per_epochs:
             print(
                 f"AVG {type.upper()} LOSS PER {avg_per_epochs}: "
-                f"{self.loss / avg_per_epochs}"
+                f"{sum(self.loss) / avg_per_epochs}"
             )
             
-            self.loss = 0
+            self.loss.pop(0)
         
         self.total_loss += loss
         
         if self.num_epochs == curr_epoch:
-            print(f"FINAL AVG {type.upper()} LOSS: {self.loss / curr_epoch}")
+            print(f"FINAL AVG {type.upper()} LOSS: "
+                  f"{self.loss / self.num_epochs}"
+            )
                 
     def render_accuracy(self, 
                         prediction: torch.Tensor, 
@@ -90,23 +92,25 @@ class Debug:
         
         correct = (prediction == labels).sum().item()
         
-        print(f"{type.upper()} ACCURACY: {correct / len(prediction)}")
+        print(f"{type.upper()} ACCURACY: "
+              f"{(correct / len(prediction)) * 100} %"
+        )
         
-        self.accuracy += correct / len(prediction)
+        self.accuracy.append(correct / len(prediction))
         
         if curr_epoch % avg_per_epochs == 0 and avg_per_epochs > 1:
             print(
-                f"AVG {type.upper()} ACCURACY PER "
-                f"{avg_per_epochs}: {self.accuracy / avg_per_epochs}"
+                f"AVG {type.upper()} ACCURACY PER {avg_per_epochs}: "
+                f"{(sum(self.accuracy) / avg_per_epochs) * 100} %"
             )
-            self.accuracy = 0
+            self.accuracy.pop(0)
             
         self.total_accuracy += correct / len(prediction)
         
         if self.num_epochs == curr_epoch:
             print(
                 f"FINAL AVG {type.upper()} ACCURACY: "
-                f"{self.accuracy / curr_epoch}"
+                f"{(self.total_accuracy / self.num_epochs) * 100} %"
             )
 
 

@@ -222,7 +222,9 @@ class Train():
             
         batch_iterator: torch.Tensor = (
             tqdm(train_ds, 
-                 desc=f"Processing epoch {epoch:02d}")
+                 desc=f"Processing epoch {epoch:02d}",
+                 position=0,
+                 leave=True)
         )
        
         for batch in batch_iterator:
