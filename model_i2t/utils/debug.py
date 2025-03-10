@@ -14,14 +14,29 @@ class Debug:
     def __init__(
         self,
         num_epochs: int,
+        num_train_batches: int,
+        num_eval_batches: int,
         file_path: str,
         enable: bool = True
     ):
+        """
+        Inicialize Debugging utilities
+        
+        Args:
+            num_epochs (int): The number of epochs
+            num_train_batches (int): The number of training batches
+            num_eval_batches (int): The number of evaluation batches
+            file_path (str): The file path to write debug information
+            enable (bool): Enable debugging
+        
+        """
         self.enable = enable
         self.num_epochs = num_epochs
-        self.loss = []
+        self.num_train_batches = num_train_batches
+        self.num_eval_batches = num_eval_batches
+        self.loss = [[] for _ in range(num_epochs)]
         self.total_loss = 0
-        self.accuracy = []
+        self.accuracy = [[] for _ in range(num_epochs)]
         self.total_accuracy = 0
         
         
@@ -41,50 +56,97 @@ class Debug:
         
         
     def render_loss(self, 
-                    loss: torch.Tensor, 
-                    curr_epoch: int, 
+                    loss: torch.Tensor,
+                    curr_batch: int, 
+                    curr_epoch: int,
+                    avg_per_batches: int = 1, 
                     avg_per_epochs: int = 1,
                     type: str = "train",):
         """
-        Render the calculation graph of the model
+        Render the loss
         
         Args:
-            model (VisionTransformer): The model
-            tensor (torch.Tensor): The tensor to render the graph for
-            name (str): The name of the file to save the graph to
+            loss (torch.Tensor): The loss
+            curr_batch (int): The current batch
+            curr_epoch (int): The current epoch
+            avg_per_batches (int): The average per batches
+            avg_per_epochs (int): The average per epochs
+            type (str): The type of loss (train, eval)
+        
         """
+        
         if self.enable is False:
             return
+        
+        if type not in ["train", "validation"]:
+            type = "train"
+            
+        if type == "train":
+            num_batches = self.num_train_batches
+        else:
+            num_batches = self.num_eval_batches
   
         print(f"{type.upper()} LOSS: {loss}")
  
-        self.loss.append(loss)
+        self.loss[curr_epoch].append(loss)
+        
+        if curr_batch > avg_per_batches:
+            print(
+                f"AVG {type.upper()} LOSS PER BATCH {avg_per_batches}: "
+                f"{sum(self.loss[curr_epoch][curr_batch - avg_per_batches:curr_batch]) / avg_per_batches}"
+            )
               
         if curr_epoch > avg_per_epochs:
             print(
-                f"AVG {type.upper()} LOSS PER {avg_per_epochs}: "
-                f"{sum(self.loss) / avg_per_epochs}"
+                f"AVG {type.upper()} LOSS PER EPOCH {avg_per_epochs}: "
+                f"{sum(self.loss[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs}"
             )
             
-            self.loss.pop(0)
-        
-        self.total_loss += loss
+        if num_batches == curr_batch:
+            print(f"FINAL AVG {type.upper()} BATCH LOSS : "
+                  f"{sum(self.loss[curr_epoch]) / num_batches}"
+            )
         
         if self.num_epochs == curr_epoch:
-            print(f"FINAL AVG {type.upper()} LOSS: "
-                  f"{self.loss / self.num_epochs}"
+            print(f"FINAL AVG {type.upper()} EPOCH LOSS: "
+                  f"{sum(self.loss) / self.num_epochs}"
             )
                 
     def render_accuracy(self, 
                         prediction: torch.Tensor, 
                         labels: torch.Tensor,
-                        curr_epoch: int, 
+                        curr_batch: int,
+                        curr_epoch: int,
+                        avg_per_batches: int = 1, 
                         avg_per_epochs: int = 1,
                         type: str = "train",
                         show_prediction: bool = True,):
+        """
+        Render the accuracy
+        
+        Args:
+            prediction (torch.Tensor): The prediction
+            labels (torch.Tensor): The labels
+            curr_batch (int): The current batch
+            curr_epoch (int): The current epoch
+            avg_per_batches (int): The average per batches
+            avg_per_epochs (int): The average per epochs
+            type (str): The type of accuracy (train, eval)
+            show_prediction (bool): Show the prediction
+
+        """
 
         if self.enable is False:
             return
+        
+        if type not in ["train", "eval"]:
+            type = "train"
+        
+        if type == "train":
+            num_batches = self.num_train_batches
+        else:
+            num_batches = self.num_eval_batches
+            
         
         if show_prediction:
             print(f"{type.upper()} PREDICTION: {prediction}")
@@ -96,21 +158,30 @@ class Debug:
               f"{(correct / len(prediction)) * 100} %"
         )
         
-        self.accuracy.append(correct / len(prediction))
+        self.accuracy[curr_epoch].append(correct / len(prediction))
+        
+        if curr_batch > avg_per_batches:
+            print(
+                f"AVG {type.upper()} ACCURACY PER BATCH {avg_per_batches}: "
+                f"{(sum(self.accuracy[curr_epoch][curr_batch - avg_per_batches:curr_batch]) / avg_per_batches) * 100} %"
+            )
         
         if curr_epoch > avg_per_epochs:
             print(
-                f"AVG {type.upper()} ACCURACY PER {avg_per_epochs}: "
-                f"{(sum(self.accuracy) / avg_per_epochs) * 100} %"
+                f"AVG {type.upper()} ACCURACY PER EPOCH {avg_per_epochs}: "
+                f"{(sum(self.accuracy[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs) * 100} %"
             )
-            self.accuracy.pop(0)
             
-        self.total_accuracy += correct / len(prediction)
+        if num_batches == curr_batch:
+            print(
+                f"FINAL AVG {type.upper()} BATCH ACCURACY : "
+                f"{(sum(self.accuracy[curr_epoch]) / num_batches) * 100} %"
+            )
         
         if self.num_epochs == curr_epoch:
             print(
-                f"FINAL AVG {type.upper()} ACCURACY: "
-                f"{(self.total_accuracy / self.num_epochs) * 100} %"
+                f"FINAL AVG {type.upper()} EPOCH ACCURACY: "
+                f"{(sum(self.accuracy) / self.num_epochs) * 100} %"
             )
 
 
@@ -120,6 +191,7 @@ class Debug:
         
         Args:
             message (str): The message to write
+            heading (Optional[str]): The heading of the message
         """
         if self.enable is False:
             return
