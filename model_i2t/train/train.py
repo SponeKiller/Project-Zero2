@@ -57,7 +57,9 @@ class Train():
         ).to(self.device)
         self.model.to(self.device, dtype=self.config.dtype)
         
-        self.debug = Debug(self.config.num_epochs, 
+        self.debug = Debug(self.config.num_epochs,
+                           self.config.batch_train_size,
+                           self.config.batch_eval_size, 
                            self.base_dir / self.config.debug_path,            self.config.debug)
         
 
@@ -225,7 +227,7 @@ class Train():
                  desc=f"Processing epoch {epoch:02d}")
         )
        
-        for batch in batch_iterator:
+        for curr_batch, batch in enumerate(batch_iterator):
             # New line after batch iterator
             print("")
             
@@ -242,8 +244,18 @@ class Train():
             
             prediction = torch.argmax(output, dim=-1)
             
-            self.debug.render_loss(loss, epoch, 5)
-            self.debug.render_accuracy(prediction, labels, epoch, 5)
+            self.debug.render_loss(loss,
+                                   curr_batch, 
+                                   epoch,
+                                   5,
+                                   5)
+            
+            self.debug.render_accuracy(prediction, 
+                                       labels,
+                                       curr_batch, 
+                                       epoch, 
+                                       5,
+                                       5)
    
             # Backpropagate the loss
             loss.backward()
@@ -269,7 +281,7 @@ class Train():
         )
 
         with torch.no_grad():
-            for batch in batch_iterator:
+            for curr_batch, batch in enumerate(batch_iterator):
                 
                 # New line after batch iterator
                 print("")
@@ -279,7 +291,13 @@ class Train():
                 
                 predicted_img = self.model.forward(input)
                 
-                self.debug.render_accuracy(predicted_img, labels, epoch, 5, "validation")
+                self.debug.render_accuracy(predicted_img, 
+                                           labels, 
+                                           curr_batch, 
+                                           epoch, 
+                                           5,
+                                           5, 
+                                           "validation")
                 
                 correct += (predicted_img == labels).sum().item()  
                 total += labels.size(0)
