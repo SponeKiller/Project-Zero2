@@ -96,7 +96,7 @@ class Debug:
                 f"{sum(self.loss[curr_epoch][curr_batch - avg_per_batches:curr_batch]) / avg_per_batches}"
             )
               
-        if curr_epoch > avg_per_epochs:
+        if curr_epoch >= avg_per_epochs and curr_batch == 0:
             print(
                 f"AVG {type.upper()} LOSS PER EPOCH {avg_per_epochs}: "
                 f"{sum(self.loss[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs}"
@@ -166,7 +166,7 @@ class Debug:
                 f"{(sum(self.accuracy[curr_epoch][curr_batch - avg_per_batches:curr_batch]) / avg_per_batches) * 100} %"
             )
         
-        if curr_epoch > avg_per_epochs:
+        if curr_epoch >= avg_per_epochs and curr_batch == 0:
             print(
                 f"AVG {type.upper()} ACCURACY PER EPOCH {avg_per_epochs}: "
                 f"{(sum(self.accuracy[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs) * 100} %"
