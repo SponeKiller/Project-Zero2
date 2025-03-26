@@ -97,9 +97,12 @@ class Debug:
             )
               
         if curr_epoch >= avg_per_epochs and curr_batch == 0:
+            epochs = self.loss[curr_epoch - avg_per_epochs:curr_epoch]
+            avg_epoch = sum(sum(e) / len(e) for e in epochs) / avg_per_epochs
+
             print(
-                f"AVG {type.upper()} LOSS PER EPOCH {avg_per_epochs}: "
-                f"{sum(self.loss[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs}"
+                f"AVG {type.upper()} LOSS PER EPOCH {avg_per_epochs}: "    
+                f"{avg_epoch}"
             )
             
         if num_batches == curr_batch:
@@ -108,9 +111,15 @@ class Debug:
             )
         
         if self.num_epochs == curr_epoch:
-            print(f"FINAL AVG {type.upper()} EPOCH LOSS: "
-                  f"{sum(self.loss) / self.num_epochs}"
+            avg_epoch = (
+                sum(sum(e) / len(e) for e in self.loss) / 
+                self.num_epochs
             )
+
+            print(
+                f"FINAL AVG {type.upper()} EPOCH LOSS: {avg_epoch}"
+            )
+
                 
     def render_accuracy(self, 
                         prediction: torch.Tensor, 
@@ -167,9 +176,15 @@ class Debug:
             )
         
         if curr_epoch >= avg_per_epochs and curr_batch == 0:
+            epochs = self.accuracy[curr_epoch - avg_per_epochs:curr_epoch]
+            avg_epoch = (
+                sum(sum(e) / len(e) for e in epochs) / 
+                avg_per_epochs * 100
+            )
+
             print(
                 f"AVG {type.upper()} ACCURACY PER EPOCH {avg_per_epochs}: "
-                f"{(sum(self.accuracy[curr_epoch - avg_per_epochs:curr_epoch]) / avg_per_epochs) * 100} %"
+                f"{avg_epoch} %"
             )
             
         if num_batches == curr_batch:
@@ -179,10 +194,15 @@ class Debug:
             )
         
         if self.num_epochs == curr_epoch:
-            print(
-                f"FINAL AVG {type.upper()} EPOCH ACCURACY: "
-                f"{(sum(self.accuracy) / self.num_epochs) * 100} %"
+            avg_epoch = (
+                sum(sum(e) / len(e) for e in self.accuracy) / 
+                self.num_epochs * 100
             )
+
+            print(
+                f"FINAL AVG {type.upper()} EPOCH ACCURACY: {avg_epoch} %"
+            )
+
 
 
     def write_to_file(self, message: str, heading: Optional[str] = None):
